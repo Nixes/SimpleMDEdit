@@ -1,170 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-		<title>Simple Md Editor</title>
-		<meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
-		<script src="vue.min.js"></script>
-		<script src="Countable.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/main.css" />
-		<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/blog.css" />
-		<link rel="stylesheet" href="http://see-bry.com/styles/HighlightJS/darkula.css"/>
-		<script src="http://see-bry.com/js/highlight.pack.js"></script>
-    <style>
-      #editor {
-        width: 100%;
-        height:calc(100% - 75px);
-      }
+	<title>Simple Md Editor</title>
+	<meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script src="vue.min.js"></script>
+	<script src="Countable.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/main.css" />
+	<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/blog.css" />
+	<link rel="stylesheet" href="http://see-bry.com/styles/HighlightJS/darkula.css"/>
+	<script src="http://see-bry.com/js/highlight.pack.js"></script>
+	<style>
+	#editor {
+		width: 100%;
+		height:calc(100% - 75px);
+	}
 
-      textarea, #editor #content {
-        height: 100%;
-        vertical-align: top;
-        padding: 0 20px;
-        position:relative;
+	textarea, #editor #content {
+		height: 100%;
+		vertical-align: top;
+		padding: 0 20px;
+		position:relative;
 
-      }
-      #editor #content {
-        flex: 1;
-        height:100%;
-        overflow-y:auto;
-      }
+	}
+	#editor #content {
+		flex: 1;
+		height:100%;
+		overflow-y:auto;
+	}
 
-      textarea {
-        border: none;
-        border-right: 1px solid #ccc;
-        resize: horizontal;
-        outline: none;
-        background-color: #f6f6f6;
-        font-size: 14px;
-        font-family: 'Monaco', courier, monospace;
-        padding: 20px;
-        width:50%;
-        float:left;
-      }
-      article {
-          margin-bottom: 0;
-      }
+	textarea {
+		border: none;
+		border-right: 1px solid #ccc;
+		resize: horizontal;
+		outline: none;
+		background-color: #f6f6f6;
+		font-size: 14px;
+		font-family: 'Monaco', courier, monospace;
+		padding: 20px;
+		width:50%;
+		float:left;
+	}
+	article {
+		margin-bottom: 0;
+	}
 
 
-      #toolbar {
-        clear:both;
-        width:100%;
-        background: #333;
-        /*position:absolute;*/
-        bottom:0;
-      }
-      #toolbar button {
-        padding: 5px;
-        margin: 5px 0px 5px 5px;
-        background: white;
-        color: #333;
-        border-radius: 2px;
-        border: none;
-      }
-      #toolbar button:hover {
-        background: #BBC;
-      }
-      #toolbar button:active {
-        background: #888;
-      }
-			#toolbar .writing-stat {
-				color:white;
-				padding: 10px;
-				display: block;
-				float: right;
+	#toolbar {
+		clear:both;
+		width:100%;
+		background: #333;
+		/*position:absolute;*/
+		bottom:0;
+	}
+	#toolbar button {
+		padding: 5px;
+		margin: 5px 0px 5px 5px;
+		background: white;
+		color: #333;
+		border-radius: 2px;
+		border: none;
+	}
+	#toolbar button:hover {
+		background: #BBC;
+	}
+	#toolbar button:active {
+		background: #888;
+	}
+	#toolbar .writing-stat {
+		color:white;
+		padding: 10px;
+		display: block;
+		float: right;
+	}
+	</style>
+	<script type="text/javascript">
+	// function based on that from: https://stackoverflow.com/questions/22084698/how-to-export-source-content-within-div-to-text-html-file
+	function download_md() {
+		var elHtml = document.getElementById('md-code').value;
+		var link = document.createElement('a');
+		var mimeType = 'text/plain';
+		var fileName =  'document.md'
+
+		link.setAttribute('download', fileName);
+		link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
+		link.click();
+	}
+
+	function load_md() {
+		var link = document.createElement('input');
+		var mimeType = 'text/plain';
+
+		link.setAttribute('type', "file");
+		link.click();
+		link.onchange = function (e) {
+			var numFiles = link.files.length;
+			reader = new FileReader();
+			reader.readAsText(link.files[0]);
+			reader.onloadend = function(e) {
+				var input = document.getElementById('md-code');
+				input.value= reader.result
+				// the below resets abything that hooks onchange and fires manually fires a count
+				var evt = document.createEvent("HTMLEvents");
+				evt.initEvent("change", false, true);
+				input.dispatchEvent(evt);
+				Countable.count(input,countable_set);
 			}
-    </style>
-    <script type="text/javascript">
-    // function based on that from: https://stackoverflow.com/questions/22084698/how-to-export-source-content-within-div-to-text-html-file
-    function download_md() {
-        var elHtml = document.getElementById('md-code').value;
-        var link = document.createElement('a');
-        var mimeType = 'text/plain';
-        var fileName =  'document.md'
-
-        link.setAttribute('download', fileName);
-        link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
-        link.click();
-    }
-
-    function load_md() {
-      var link = document.createElement('input');
-      var mimeType = 'text/plain';
-
-      link.setAttribute('type', "file");
-      link.click();
-      link.onchange = function (e) {
-        var numFiles = link.files.length;
-        reader = new FileReader();
-        reader.readAsText(link.files[0]);
-        reader.onloadend = function(e) {
-          var input = document.getElementById('md-code');
-					input.value= reader.result
-					// the below resets abything that hooks onchange and fires manually fires a count
-					var evt = document.createEvent("HTMLEvents");
-					evt.initEvent("change", false, true);
-					input.dispatchEvent(evt);
-					Countable.count(input,countable_set);
-        }
-      }
-    }
-
-    function vue_init () {
-      new Vue({
-        el: '#editor',
-        data: {
-          input: "# Title"
-        },
-        filters: {
-          marked: marked
-        }
-      })
-    }
-
-		function countable_set(counter) {
-				document.getElementById('stats').innerHTML ="sentences: "+counter.sentences +", paragraphs: "+ counter.paragraphs +", words: "+ counter.words;
 		}
+	}
 
-		function countable_init() {
-			var input = document.getElementById('md-code');
+	function vue_init () {
+		new Vue({
+			el: '#editor',
+			data: {
+				input: "# Title"
+			},
+			filters: {
+				marked: marked
+			}
+		})
+	}
 
-			Countable.live(input,countable_set);
+	function countable_set(counter) {
+		document.getElementById('stats').innerHTML ="sentences: "+counter.sentences +", paragraphs: "+ counter.paragraphs +", words: "+ counter.words;
+	}
+
+	function countable_init() {
+		var input = document.getElementById('md-code');
+
+		Countable.live(input,countable_set);
+	}
+
+	window.onload = function(){
+		vue_init();
+		countable_init();
+	};
+
+	document.onkeydown = function(e){
+		var e = e || window.event;
+		if (e.ctrlKey) {
+			var c = e.which || e.keyCode;
+			//console.log("CTRL and "+c);
+			if (c == 83) {
+				console.log("CTRL + S pressed ");
+				e.preventDefault(); // prevents default browser action
+				download_md();
+			}
 		}
-
-    window.onload = function(){
-      vue_init();
-			countable_init();
-    };
-
-    document.onkeydown = function(e){
-      var e = e || window.event;
-      if (e.ctrlKey) {
-        var c = e.which || e.keyCode;
-        //console.log("CTRL and "+c);
-        if (c == 83) {
-          console.log("CTRL + S pressed ");
-          e.preventDefault(); // prevents default browser action
-          download_md();
-        }
-      }
-    }
-    </script>
+	}
+	</script>
 </head>
 
 <body>
-  <div id="toolbar">
-    <button type="button" onclick="download_md()">Save Locally</button>
-    <button type="button" onclick="load_md()">Load Locally</button>
-    <button type="button" onclick="" disabled>Save Draft Online</button>
-    <button type="button" onclick="" disabled>Load Draft Online</button>
-    <button type="button" onclick="" disabled>Publish Final</button>
+	<div id="toolbar">
+		<button type="button" onclick="download_md()">Save Locally</button>
+		<button type="button" onclick="load_md()">Load Locally</button>
+		<button type="button" onclick="" disabled>Save Draft Online</button>
+		<button type="button" onclick="" disabled>Load Draft Online</button>
+		<button type="button" onclick="" disabled>Publish Final</button>
 		<div id="stats" class="writing-stat"></div>
-  </div>
-  <div id="editor">
-    <textarea v-model="input" debounce="300" spellcheck="true" id="md-code"></textarea>
-    <div id="content"><article  v-html="input | marked"></article></div>
-  </div>
+	</div>
+	<div id="editor">
+		<textarea v-model="input" debounce="300" spellcheck="true" id="md-code"></textarea>
+		<div id="content"><article  v-html="input | marked"></article></div>
+	</div>
 
 </body>
 </html>
