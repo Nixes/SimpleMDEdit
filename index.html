@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Simple Md Editor</title>
-    <meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/main.css" />
-    <link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/blog.css" />
-
-    <script src="Countable.min.js"></script>
-
-    <link rel="stylesheet" href="http://see-bry.com/styles/HighlightJS/darkula.css"/>
-    <script src="http://see-bry.com/js/highlight.pack.js"></script>
+		<title>Simple Md Editor</title>
+		<meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+		<script src="vue.min.js"></script>
+		<script src="Countable.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/main.css" />
+		<link rel="stylesheet" type="text/css" href="http://see-bry.com/styles/blog.css" />
+		<link rel="stylesheet" href="http://see-bry.com/styles/HighlightJS/darkula.css"/>
+		<script src="http://see-bry.com/js/highlight.pack.js"></script>
     <style>
       #editor {
         width: 100%;
@@ -161,7 +159,7 @@
     <button type="button" onclick="" disabled>Save Draft Online</button>
     <button type="button" onclick="" disabled>Load Draft Online</button>
     <button type="button" onclick="" disabled>Publish Final</button>
-    <div id="stats" class="writing-stat"></div>
+		<div id="stats" class="writing-stat"></div>
   </div>
   <div id="editor">
     <textarea v-model="input" debounce="300" spellcheck="true" id="md-code"></textarea>
